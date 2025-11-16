@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Garbage Detection with Gemini + Leaflet</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    #map { height: 400px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Garbage Detection System</h2>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="file" required><br><br>
+    <button type="submit">Upload & Detect</button>
+  </form>
+
+  <p id="result"></p>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map('map').setView([20.5937, 78.9629], 5); // India default view
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    document.getElementById("uploadForm").onsubmit = async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+      });
+      const data = await response.json();
+      document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+
+      if (data.status === "Garbage Detected" && data.lat && data.lon) {
+        map.setView([data.lat, data.lon], 15);
+        L.marker([data.lat, data.lon]).addTo(map)
+          .bindPopup(`<b>${data.status}</b><br>${data.description}`)
+          .openPopup();
+      } else {
+        alert("No GPS data found in image. Try uploading a photo taken with GPS enabled.");
+      }
+    }
+  </script>
+</body>
+</html>
