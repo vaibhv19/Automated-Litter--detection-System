@@ -54,7 +54,7 @@ Image Input → AI Detection → Location Extraction → Backend Processing → 
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/your-username/garbage-detection-system.git
+git clone https://github.com/vaibhv19/garbage-detection-system.git
 cd garbage-detection-system
 ```
 
